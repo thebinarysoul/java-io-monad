@@ -32,7 +32,7 @@ public class IO<A> {
 
     /**
      * This is a function which is mapping inner effect into a new effect, by represented
-     * of combination unit and flatMap operations
+     * of combination apply and flatMap operations
      */
     public <B> IO<B> map(final Function<? super A, ? extends B> function){
         return this.flatMap(result -> IO.apply(() -> function.apply(result)));
@@ -40,14 +40,14 @@ public class IO<A> {
 
     /**
      * This is a function which is mapping inner effect into a new effect with result type Void, by represented
-     * of combination unit and flatMap operations
+     * of combination apply and flatMap operations
      */
     public IO<Void> mapToVoid(final Consumer<? super A> function) {
-        return IO.apply(() -> {
-            function.accept(effect.run());
+        return this.flatMap(result -> IO.apply(() -> {
+            function.accept(result);
             //We can't instantiate Void, hence we can return null only
             return null;
-        });
+        }));
     }
 
     /**
