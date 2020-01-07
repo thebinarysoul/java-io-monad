@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 /**
  * The data structure that implements the IO Monad abstraction to encapsulate side effects
+ *
  * @param <A> is result type of effect execution
  */
 public class IO<A> {
@@ -34,7 +35,7 @@ public class IO<A> {
      * This is a function which is mapping inner effect into a new effect, by represented
      * of combination apply and flatMap operations
      */
-    public <B> IO<B> map(final Function<? super A, ? extends B> function){
+    public <B> IO<B> map(final Function<? super A, ? extends B> function) {
         return this.flatMap(result -> IO.apply(() -> function.apply(result)));
     }
 
@@ -66,5 +67,26 @@ public class IO<A> {
         } catch (Exception ex) {
             return Either.left(ex);
         }
+    }
+
+
+    public static IO<Void> putStrLn(final String line) {
+        return IO.apply(() -> {
+            System.out.println(line);
+            return null;
+        });
+    }
+
+    public static IO<String> readLn() {
+        return IO.apply(() -> System.console().readLine());
+    }
+
+    public static void main(String[] args) {
+        IO.apply(() -> "What is your name friend?")
+                .mapToVoid(System.out::println)
+                .map(ignored -> System.console().readLine())
+                .map(name -> String.format("Hello %s! Do you want to talk about Monads?", name))
+                .mapToVoid(System.out::println);
+
     }
 }
